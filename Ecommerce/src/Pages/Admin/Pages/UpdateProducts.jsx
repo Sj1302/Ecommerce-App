@@ -1,16 +1,19 @@
 /*eslint-disable*/
 import React, { useContext } from 'react'
 import MyContext from '../../../context/MyContext'
+import Loader from '../../../Components/Loader';
 
 const UpdateProducts = () => {
     const context= useContext(MyContext);
-    const {products, setProducts, updateProducts}=context;
+    const {products, setProducts, updateProducts, loading}=context;
     const update=()=>{
         console.log("sdfghj");
         updateProducts();
     }
   return (
     <div className='flex justify-center items-center h-screen bg-gray-200'>
+         {loading && <div className="absolute inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50"><Loader /></div>}
+           
     <div className=' bg-white px-10 py-10 rounded-xl my-5 '>
         <div className="">
             <h1 className='text-center text-black text-xl mb-4 font-bold'>Update Product</h1>

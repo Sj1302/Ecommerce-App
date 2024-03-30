@@ -4,7 +4,7 @@ import MyContext from "../../context/MyContext";
 import Layout from "../../Components/Layout";
 import Modal from "../../Components/Modal";
 import { useDispatch, useSelector } from "react-redux";
-import { addToCart, deleteFromCart, updQuantity } from "../../redux/CartSlice";
+import { ClearCart, addToCart, deleteFromCart, updQuantity } from "../../redux/CartSlice";
 import { toast } from "react-toastify";
 import { db } from "../../firebase/firebaseConfig";
 import { addDoc, collection } from "firebase/firestore";
@@ -71,17 +71,21 @@ const grandTotal= totalprice+shippingCost;
       }
       console.log(addressInfo)
       var options = {
-        key: "",
-        key_secret: "",
+        key: "rzp_test_f7Syb4PJqZi6vz",
+        key_secret: "FObKfYdJgea7c2bS3x1QZs1E",
         amount: parseInt(grandTotal * 100),
         currency: "INR",
         order_receipt: 'order_rcptid_' + name,
-        name: "E-Bharat",
+        name: "ShopEase",
         description: "for testing purpose",
         handler: function (response) {
           console.log(response);
           toast.success("Payment Successful!");
-
+          setPhoneNumber("");
+          setPincode("");
+          setAddress("");
+          setName("")
+          dispatch(ClearCart([]))
           const paymentId= response.razorpay_payment_id;
           const orderInfo = {
             cartitem,
@@ -111,7 +115,7 @@ const grandTotal= totalprice+shippingCost;
       }
       var pay = new window.Razorpay(options);
     pay.open();
-    console.log(pay)
+    
     }
   };
   return (

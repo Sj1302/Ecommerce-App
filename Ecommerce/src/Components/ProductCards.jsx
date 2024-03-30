@@ -4,15 +4,18 @@ import MyContext from "../context/MyContext";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../redux/CartSlice";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const ProductCards = () => {
   const context = useContext(MyContext);
-  const { mode, product } = context;
+  const { mode, product,searchKey,filterType } = context;
 const dispatch= useDispatch();
+const navigate= useNavigate();
 const cartItems = useSelector(state => state.cart);
 
 
-    const handleAddToCart = item => {
+    const handleAddToCart = (e,item) => {
+      e.stopPropagation();
         const itemWithQuantity = { ...item, quantity: 1 };
         dispatch(addToCart(itemWithQuantity));
         toast.success("Item added to Cart");
@@ -21,6 +24,8 @@ const cartItems = useSelector(state => state.cart);
     useEffect(() => {
         localStorage.setItem('cart', JSON.stringify(cartItems));
     }, [cartItems]);
+
+    console.log(product);
  
   return (
     <div>
@@ -36,56 +41,32 @@ const cartItems = useSelector(state => state.cart);
             <div className="h-1 w-20 bg-yellow-500 rounded"></div>
           </div>
           <div className="flex flex-wrap -m-4">
-            {product &&
-              product.map((item, index) => (
-                <div key={index} className="p-4 md:w-1/4  drop-shadow-lg ">
-                  <div
-                    className="h-full border-2 hover:shadow-gray-100 hover:shadow-2xl transition-shadow duration-300 ease-in-out    border-gray-200 border-opacity-60 rounded-2xl overflow-hidden"
-                    style={{
-                      backgroundColor: mode === "dark" ? "rgb(46 49 55)" : "",
-                      color: mode === "dark" ? "white" : "",
-                    }}
-                  >
+          {product
+    .filter((obj) => {
+        const matchesSearch = obj.title.toLowerCase().includes(searchKey.toLowerCase());
+        const matchesCategory = filterType ? obj.category.toLowerCase() === filterType.toLowerCase() : true;
+        return matchesSearch && matchesCategory;
+    }).slice(0,8)
+    .map((item, index) => {
+        const { title, price, imageUrl, id } = item;
+        return (
+            <div className="p-4 md:w-1/4 drop-shadow-lg" key={index} onClick={()=>{navigate(`/productinfo/${id}`); window.scrollTo(0, 0);}}>
+                <div className="h-full border-2 hover:shadow-gray-100 hover:shadow-2xl transition-shadow duration-300 ease-in-out border-gray-200 border-opacity-60 rounded-2xl overflow-hidden" style={{ backgroundColor: mode === 'dark' ? 'rgb(46 49 55)' : '', color: mode === 'dark' ? 'white' : '' }}>
                     <div className="flex justify-center cursor-pointer">
-                      <img
-                        className=" rounded-2xl w-full h-80 p-2 hover:scale-110 transition-scale-110  duration-300 ease-in-out object-cover"
-                        src={item.imageUrl}
-                        alt="blog"
-                      />
+                        <img className="rounded-2xl w-full h-80 p-2 hover:scale-110 transition-scale-110 duration-300 ease-in-out" src={imageUrl} alt={title} />
                     </div>
                     <div className="p-5 border-t-2">
-                      <h2
-                        className="tracking-widest text-xs title-font font-medium text-gray-400 mb-1"
-                        style={{ color: mode === "dark" ? "white" : "" }}
-                      >
-                        ShopEase
-                      </h2>
-                      <h1
-                        className="title-font text-lg font-medium text-gray-900 mb-3"
-                        style={{ color: mode === "dark" ? "white" : "" }}
-                      >
-                        {item.title}
-                      </h1>
-                      {/* <p className="leading-relaxed mb-3">{item.description.}</p> */}
-                      <p
-                        className="leading-relaxed mb-3"
-                        style={{ color: mode === "dark" ? "white" : "" }}
-                      >
-                        ₹{item.price}
-                      </p>
-                      <div className=" flex justify-center">
-                        <button
-                        onClick={()=> handleAddToCart(item)}
-                          type="button"
-                          className="focus:outline-none text-white bg-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm w-full  py-2"
-                        >
-                          Add To Cart
-                        </button>
-                      </div>
+                        <h2 className="tracking-widest text-xs title-font font-medium text-gray-400 mb-1" style={{ color: mode === 'dark' ? 'white' : '' }}>ShopEase</h2>
+                        <h1 className="title-font text-lg font-medium text-gray-900 mb-3" style={{ color: mode === 'dark' ? 'white' : '' }}>{title}</h1>
+                        <p className="leading-relaxed mb-3" style={{ color: mode === 'dark' ? 'white' : '' }}>₹ {price}</p>
+                        <div className="flex justify-center">
+                            <button onClick={(e) => handleAddToCart(e,item)} type="button" className="focus:outline-none text-white bg-yellow-500 hover:bg-yellow-600 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm w-full py-2">Add To Cart</button>
+                        </div>
                     </div>
-                  </div>
                 </div>
-              ))}
+            </div>
+        );
+    })}
           </div>
         </div>
       </section>

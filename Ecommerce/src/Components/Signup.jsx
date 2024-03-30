@@ -83,6 +83,7 @@ const navigate= useNavigate();
               className="bg-gray-50 border border-gray-300 px-2 py-2 w-96 rounded-md outline-none placeholder-black"
             />
           </div>
+         
           {/* Signup Button  */}
           <div className="mb-5">
             <button
